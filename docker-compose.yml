@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+  #   - react
+      - node
+  #   - flask
+
+  #  react:
+  # build: ./react-frontend
+  # container_name: react-frontend
+  # restart: unless-stopped
+
+  node:
+    build: ./node-backend
+    container_name: node-backend
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/mydb
+    depends_on:
+      - mongo
+    restart: unless-stopped
+
+# flask:
+#    build: ./flask-backend
+#   container_name: flask-backend
+#   environment:
+#     - POSTGRES_URI=postgresql://postgres:password@postgres:5432/postgres
+#   depends_on:
+#     - postgres
+#   restart: unless-stopped
+
+  mongo:
+    image: mongo:4.4
+    container_name: mongo
+    volumes:
+      - ./mongo-data:/data/db
+
+  postgres:
+    image: postgres:13
+    container_name: postgres
+    environment:
+      POSTGRES_PASSWORD: password
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+
